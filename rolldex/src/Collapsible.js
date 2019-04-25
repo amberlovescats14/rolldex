@@ -7,31 +7,44 @@ export default class Collapsible extends Component {
     super(props)
     this.state = {
       expanded: false,
+      apiItem: [],
+      isLoaded: false,
+
     }
   }
-  handleClick = (e) => {
-    this.setState({
-      expanded: !this.state.expanded
+  componentDidMount() {
+    fetch('https://randomuser.me/api?results=25')
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data.results)
+      this.setState({
+        apiItem: data.results,
+        isLoaded: true
+      })
     })
   }
+  handleClick = (e) => {
+    console.log(e.target.className)
+    let eyeD = e.target.className
+    // document.getElementById(e.target.className).style.visibility = "hidden";
+  }
   render() {
-    console.log(this.state.expanded)
-    const styleButton = {
-      display: 'inline-block'
-    }
+    console.log(this.state.apiItem.name)
     return (
-      <div>
-        <div>
-             <h4 style={styleButton}>Contact Info</h4>   
-             <button className={`panel ${this.state.expanded ? 'is-expanded' : ''} `}   onClick={this.handleClick}>X</button>
-        </div>
-
-        <div className="panel-collapse" >
-        <div className="panel-body" ref="inner">
-        {this.props.children}
-          </div>
-        </div>
-      </div>
+     <div>
+       <ul>
+        { this.state.apiItem.map((results, i)=> {
+          return <li key={i}>
+            {results.name.first}
+            <br/>
+            <img src={results.picture.medium}></img>
+            <button onClick={this.handleClick} className={i}>Contact Info</button>
+          </li>
+         })}
+       </ul>
+     </div>
     )
   }
 }
+
+
